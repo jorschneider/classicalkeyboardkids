@@ -16,6 +16,7 @@
       --accent-4: #1982c4;
       --accent-5: #6a4c93;
       --accent-6: #ffca3a;
+      --toast-accent: var(--accent-4);
     }
 
     * {
@@ -106,9 +107,48 @@
     .keys-grid {
       position: relative;
       z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .keys-row-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .keys-row-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(29, 27, 47, 0.55);
+      padding-left: 0.35rem;
+    }
+
+    .keys-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(115px, 1fr);
       gap: 1rem;
+      padding-bottom: 0.4rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+    }
+
+    .keys-row::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .keys-row::-webkit-scrollbar-thumb {
+      background: rgba(106, 76, 147, 0.22);
+      border-radius: 999px;
+    }
+
+    .keys-row:focus-visible {
+      outline: 2px solid var(--accent-4);
+      outline-offset: 4px;
     }
 
     .key-card {
@@ -126,6 +166,7 @@
       border: 3px solid transparent;
       position: relative;
       --card-color: var(--accent-4);
+      scroll-snap-align: start;
     }
 
     .key-card span.letter {
@@ -220,7 +261,204 @@
       position: relative;
       z-index: 1;
       display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 16px;
+      padding: 1.1rem 1.4rem;
+      box-shadow: 0 12px 26px rgba(30, 30, 60, 0.15);
+    }
+
+    .volume-control {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 220px;
+    }
+
+    .volume-control label {
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      color: rgba(29, 27, 47, 0.65);
+    }
+
+    .volume-control input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: clamp(160px, 25vw, 260px);
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(106, 76, 147, 0.24);
+      outline: none;
+      position: relative;
+    }
+
+    .volume-control input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-4);
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(25, 130, 196, 0.35);
+    }
+
+    .volume-control input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-4);
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(25, 130, 196, 0.35);
+      border: none;
+    }
+
+    .volume-control__value {
+      font-weight: 600;
+      font-size: 0.9rem;
+      min-width: 3.25rem;
+    }
+
+    .stop {
+      margin-left: auto;
+    }
+
+    .queue-panel {
+      margin-top: 2.5rem;
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 18px;
+      padding: 1.4rem 1.6rem;
+      box-shadow: 0 12px 28px rgba(30, 30, 60, 0.16);
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .queue-panel__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .queue-panel h2 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .queue-empty {
+      margin: 0;
+      font-size: 0.95rem;
+      color: rgba(29, 27, 47, 0.65);
+    }
+
+    .queue-summary {
+      margin: 0;
+      font-size: 0.9rem;
+      color: rgba(29, 27, 47, 0.7);
+      display: flex;
+      gap: 0.4rem;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+
+    .queue-summary__pill {
+      display: inline-flex;
+      align-items: center;
       justify-content: center;
+      padding: 0.2rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(25, 130, 196, 0.12);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      color: rgba(29, 27, 47, 0.75);
+    }
+
+    .queue-summary__text {
+      font-weight: 600;
+    }
+
+    .queue-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .queue-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 0.95rem;
+      color: rgba(29, 27, 47, 0.9);
+    }
+
+    .queue-item .queue-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(106, 76, 147, 0.14);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .queue-item .queue-meta {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(29, 27, 47, 0.6);
+    }
+
+    .queue-item.queue-item--more {
+      justify-content: flex-end;
+      font-style: italic;
+      color: rgba(29, 27, 47, 0.6);
+    }
+
+    .queue-item.is-playing .queue-pill {
+      background: rgba(25, 130, 196, 0.16);
+      color: var(--accent-4);
+    }
+
+    .queue-item.is-next .queue-pill {
+      background: rgba(255, 159, 28, 0.18);
+      color: var(--accent-1);
+    }
+
+    button.clear-queue {
+      background: transparent;
+      border: 2px solid rgba(106, 76, 147, 0.3);
+      color: var(--text);
+      font-weight: 600;
+      border-radius: 999px;
+      padding: 0.45rem 1.1rem;
+      cursor: pointer;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    button.clear-queue:hover:not(:disabled) {
+      border-color: rgba(106, 76, 147, 0.65);
+      transform: translateY(-2px);
+    }
+
+    button.clear-queue:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
     }
 
     button.stop {
@@ -255,9 +493,83 @@
       z-index: 1;
     }
 
+    .melody-toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 5;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      max-width: min(320px, calc(100vw - 40px));
+    }
+
+    .melody-toast[data-visible="true"] {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .melody-toast__bubble {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 22px;
+      padding: 0.75rem 1.1rem;
+      box-shadow: 0 18px 40px rgba(30, 30, 60, 0.2);
+      border: 2px solid rgba(106, 76, 147, 0.25);
+      backdrop-filter: blur(8px);
+    }
+
+    .melody-toast__key {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 48px;
+      min-height: 48px;
+      padding: 0 0.75rem;
+      border-radius: 14px;
+      background: var(--toast-accent);
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    .melody-toast__text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .melody-toast__title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .melody-toast__composer {
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: rgba(29, 27, 47, 0.65);
+    }
+
     @media (max-width: 600px) {
       main {
         padding: 2rem 1.4rem;
+      }
+
+      .keys-grid {
+        gap: 1.1rem;
+      }
+
+      .keys-row {
+        grid-auto-columns: minmax(140px, 70%);
       }
 
       .key-card {
@@ -274,6 +586,34 @@
         height: 60px;
         font-size: 2.2rem;
       }
+
+      .queue-panel {
+        padding: 1.1rem 1.2rem;
+      }
+
+      .queue-panel__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+
+      .melody-toast {
+        left: 20px;
+        right: 20px;
+        bottom: 24px;
+        max-width: none;
+      }
+
+      .melody-toast__bubble {
+        justify-content: center;
+        text-align: center;
+      }
+
+      .melody-toast__key {
+        min-width: 44px;
+        min-height: 44px;
+        font-size: 1.2rem;
+      }
     }
   </style>
 </head>
@@ -288,9 +628,37 @@
       </div>
     </header>
 
+    <div class="melody-toast" role="status" aria-live="assertive" aria-atomic="true">
+      <div class="melody-toast__bubble">
+        <span class="melody-toast__key" aria-hidden="true"></span>
+        <div class="melody-toast__text">
+          <span class="melody-toast__title"></span>
+          <span class="melody-toast__composer"></span>
+        </div>
+      </div>
+    </div>
+
     <section class="keys-grid" aria-label="Keyboard melody options"></section>
 
+    <aside class="queue-panel" aria-label="Playback queue" aria-live="polite">
+      <div class="queue-panel__header">
+        <h2>Playback queue</h2>
+        <button class="clear-queue" type="button" id="clearQueueButton" disabled>Clear queue</button>
+      </div>
+      <p class="queue-empty" id="queueEmptyMessage">No melodies queued yet—tap a card or press a key to line one up.</p>
+      <p class="queue-summary" id="queueSummary" hidden>
+        <span class="queue-summary__pill" id="queueCount"></span>
+        <span class="queue-summary__text" id="queueDuration"></span>
+      </p>
+      <ol class="queue-list" role="list" aria-describedby="queueEmptyMessage"></ol>
+    </aside>
+
     <div class="controls">
+      <div class="volume-control">
+        <label for="volumeSlider">Volume</label>
+        <input type="range" id="volumeSlider" min="0" max="100" value="68" step="1" aria-label="Volume level" />
+        <span class="volume-control__value" id="volumeValue" aria-live="polite">68%</span>
+      </div>
       <button class="stop" type="button" id="stopButton">Stop the music</button>
     </div>
 
@@ -559,7 +927,7 @@
         ]
       },
       lullaby: {
-        title: 'Brahms' Lullaby',
+        title: "Brahms' Lullaby",
         composer: 'J. Brahms',
         notes: [
           { note: 'G4', duration: 420 },
@@ -702,13 +1070,62 @@
     const keyMatcher = {};
     const keysGrid = document.querySelector('.keys-grid');
     const nowPlayingValue = document.querySelector('.now-playing .value');
+    const queueList = document.querySelector('.queue-list');
+    const queueEmptyMessage = document.getElementById('queueEmptyMessage');
+    const queueSummary = document.getElementById('queueSummary');
+    const queueCount = document.getElementById('queueCount');
+    const queueDuration = document.getElementById('queueDuration');
+    const clearQueueButton = document.getElementById('clearQueueButton');
+    const melodyToast = document.querySelector('.melody-toast');
+    const melodyToastKey = melodyToast ? melodyToast.querySelector('.melody-toast__key') : null;
+    const melodyToastTitle = melodyToast ? melodyToast.querySelector('.melody-toast__title') : null;
+    const melodyToastComposer = melodyToast ? melodyToast.querySelector('.melody-toast__composer') : null;
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeValue = document.getElementById('volumeValue');
+    const stopButton = document.getElementById('stopButton');
+    const STORAGE_KEYS = {
+      volume: 'classicalKeyboard.volumeLevel'
+    };
+
+    const KEY_ROW_LABELS = [
+      'Esc & numbers',
+      'Top letters',
+      'Home row',
+      'Bottom row',
+      'Space & modifiers',
+      'Navigation keys'
+    ];
+
+    const rowContainers = [];
+    if (keysGrid) {
+      KEY_ROWS.forEach((_, rowIndex) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'keys-row-wrapper';
+
+        const labelId = `keys-row-label-${rowIndex + 1}`;
+        const label = document.createElement('div');
+        label.className = 'keys-row-label';
+        label.id = labelId;
+        label.textContent = KEY_ROW_LABELS[rowIndex] || `Row ${rowIndex + 1}`;
+        wrapper.appendChild(label);
+
+        const rowElement = document.createElement('div');
+        rowElement.className = 'keys-row';
+        rowElement.setAttribute('role', 'group');
+        rowElement.setAttribute('aria-labelledby', labelId);
+        wrapper.appendChild(rowElement);
+
+        keysGrid.appendChild(wrapper);
+        rowContainers.push(rowElement);
+      });
+    }
 
     const keyEntries = [];
-    KEY_ROWS.forEach(row => {
-      row.forEach(key => {
+    KEY_ROWS.forEach((row, rowIndex) => {
+      row.forEach((key) => {
         const datasetKey = datasetKeyFor(key);
         const display = displayLabelFor(key);
-        keyEntries.push({ key, datasetKey, display });
+        keyEntries.push({ key, datasetKey, display, rowIndex });
       });
     });
 
@@ -741,7 +1158,10 @@
       card.setAttribute('aria-label', `${entry.display} key plays ${pattern.title}`);
       card.setAttribute('role', 'button');
       card.setAttribute('tabindex', '0');
-      keysGrid.appendChild(card);
+      const host = rowContainers[entry.rowIndex] || keysGrid;
+      if (host) {
+        host.appendChild(card);
+      }
 
       const letterSpan = card.querySelector('.letter');
       if (entry.display.length > 2) {
@@ -794,7 +1214,6 @@
 
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const masterGain = audioContext.createGain();
-    masterGain.gain.value = 0.28;
     masterGain.connect(audioContext.destination);
 
     const playbackQueue = [];
@@ -802,6 +1221,158 @@
     let cancelCurrent = false;
     let activeNodes = [];
     let currentCard = null;
+    let currentDurationEstimate = 0;
+    let toastHideTimeout = null;
+
+    function hideMelodyToast(clearTimer = false) {
+      if (!melodyToast) {
+        return;
+      }
+      if (clearTimer && toastHideTimeout) {
+        clearTimeout(toastHideTimeout);
+        toastHideTimeout = null;
+      }
+      delete melodyToast.dataset.visible;
+    }
+
+    function showMelodyToast(key) {
+      if (!melodyToast) {
+        return;
+      }
+      const melody = melodies[key];
+      if (!melody) {
+        return;
+      }
+      if (toastHideTimeout) {
+        clearTimeout(toastHideTimeout);
+        toastHideTimeout = null;
+      }
+
+      if (melodyToastKey) {
+        const label = melody.keyLabel || key;
+        const normalized = label.length === 1 ? label.toUpperCase() : label;
+        const trimmed = normalized.length > 10 ? `${normalized.slice(0, 9)}…` : normalized;
+        melodyToastKey.textContent = trimmed;
+      }
+
+      if (melodyToastTitle) {
+        melodyToastTitle.textContent = melody.title || '';
+      }
+
+      if (melodyToastComposer) {
+        if (melody.composer) {
+          melodyToastComposer.textContent = `by ${melody.composer}`;
+          melodyToastComposer.style.display = '';
+        } else {
+          melodyToastComposer.textContent = '';
+          melodyToastComposer.style.display = 'none';
+        }
+      }
+
+      const card = document.querySelector(`.key-card[data-key="${key}"]`);
+      if (card && card.dataset && card.dataset.color) {
+        const accent = card.dataset.color;
+        melodyToast.style.setProperty('--toast-accent', accent);
+      } else {
+        melodyToast.style.setProperty('--toast-accent', 'var(--accent-4)');
+      }
+
+      melodyToast.dataset.visible = 'true';
+      toastHideTimeout = setTimeout(() => {
+        toastHideTimeout = null;
+        hideMelodyToast();
+      }, 2600);
+    }
+
+    function syncQueueButtonState() {
+      if (!clearQueueButton) {
+        return;
+      }
+      clearQueueButton.disabled = playbackQueue.length === 0;
+    }
+
+    function renderQueue() {
+      if (!queueList) {
+        syncQueueButtonState();
+        return;
+      }
+
+      queueList.innerHTML = '';
+
+      const activeKey = currentCard && currentCard.dataset ? currentCard.dataset.key : null;
+      const activeMelody = activeKey ? melodies[activeKey] : null;
+
+      if (activeMelody) {
+        const item = document.createElement('li');
+        item.className = 'queue-item is-playing';
+        item.innerHTML = `
+          <span class="queue-pill">${activeMelody.title}</span>
+          <span class="queue-meta">Now playing</span>
+        `;
+        queueList.appendChild(item);
+      }
+
+      const previewCount = 6;
+      const upcoming = playbackQueue.slice(0, previewCount);
+      upcoming.forEach((key, index) => {
+        const melody = melodies[key];
+        if (!melody) {
+          return;
+        }
+        const item = document.createElement('li');
+        item.className = 'queue-item';
+        if (index === 0) {
+          item.classList.add('is-next');
+        }
+        const label = index === 0 ? 'Next up' : `In line #${index + 1}`;
+        item.innerHTML = `
+          <span class="queue-pill">${melody.title}</span>
+          <span class="queue-meta">${label}</span>
+        `;
+        queueList.appendChild(item);
+      });
+
+      if (playbackQueue.length > upcoming.length) {
+        const remaining = playbackQueue.length - upcoming.length;
+        const item = document.createElement('li');
+        item.className = 'queue-item queue-item--more';
+        item.innerHTML = `<span class="queue-meta">+ ${remaining} more queued</span>`;
+        queueList.appendChild(item);
+      }
+
+      const hasEntries = queueList.children.length > 0;
+      if (queueEmptyMessage) {
+        queueEmptyMessage.hidden = hasEntries;
+      }
+      queueList.hidden = !hasEntries;
+
+      const queuedMelodies = playbackQueue.filter((key) => melodies[key]);
+      const totalItems = (activeMelody ? 1 : 0) + queuedMelodies.length;
+      const upcomingDuration = queuedMelodies.reduce((total, key) => {
+        const melody = melodies[key];
+        return melody ? total + totalDurationForMelody(melody) : total;
+      }, 0);
+      const activeDuration = activeMelody ? currentDurationEstimate : 0;
+      const totalDuration = activeDuration + upcomingDuration;
+
+      if (queueSummary) {
+        if (totalItems > 0) {
+          queueSummary.hidden = false;
+          if (queueCount) {
+            queueCount.textContent = totalItems === 1 ? '1 melody' : `${totalItems} melodies`;
+          }
+          if (queueDuration) {
+            queueDuration.textContent = totalDuration > 0
+              ? `Approx. ${formatDuration(totalDuration)}`
+              : 'Approx. 0s';
+          }
+        } else {
+          queueSummary.hidden = true;
+        }
+      }
+
+      syncQueueButtonState();
+    }
 
     function totalDurationForMelody(melody) {
       if (!melody || !Array.isArray(melody.notes)) {
@@ -813,6 +1384,80 @@
       }, 0);
       const padding = melody.notes.length * 60;
       return base + padding;
+    }
+
+    function formatDuration(durationMs) {
+      if (!durationMs || !Number.isFinite(durationMs)) {
+        return '0s';
+      }
+      const totalSeconds = Math.max(Math.round(durationMs / 1000), 0);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      if (minutes <= 0) {
+        return `${seconds}s`;
+      }
+      return `${minutes}m ${seconds.toString().padStart(2, '0')}s`;
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function sliderValueToGain(value) {
+      const normalized = clamp(Number(value) / 100, 0, 1);
+      const curved = Math.pow(normalized, 1.5);
+      return +(curved * 0.9).toFixed(4);
+    }
+
+    function paintVolumeSlider(value) {
+      if (!volumeSlider) {
+        return;
+      }
+      const percent = clamp(Number(value), 0, 100);
+      const fill = `${percent}%`;
+      volumeSlider.style.background = `linear-gradient(90deg, var(--accent-4) ${fill}, rgba(106, 76, 147, 0.24) ${fill})`;
+    }
+
+    function updateVolumeDisplay(value) {
+      const rounded = Math.round(clamp(Number(value), 0, 100));
+      if (volumeValue) {
+        volumeValue.textContent = `${rounded}%`;
+      }
+      if (volumeSlider) {
+        volumeSlider.setAttribute('aria-valuenow', String(rounded));
+        volumeSlider.setAttribute('aria-valuetext', `${rounded} percent volume`);
+      }
+    }
+
+    function applyVolume(value, { persist = false } = {}) {
+      const numericValue = clamp(Number(value), 0, 100);
+      const gainValue = sliderValueToGain(numericValue);
+      masterGain.gain.setTargetAtTime(gainValue, audioContext.currentTime, 0.01);
+      updateVolumeDisplay(numericValue);
+      paintVolumeSlider(numericValue);
+      if (persist && window.localStorage) {
+        try {
+          window.localStorage.setItem(STORAGE_KEYS.volume, String(numericValue));
+        } catch (err) {
+          /* ignore storage errors */
+        }
+      }
+    }
+
+    function readStoredVolume() {
+      if (!window.localStorage) {
+        return null;
+      }
+      try {
+        const stored = window.localStorage.getItem(STORAGE_KEYS.volume);
+        if (stored === null) {
+          return null;
+        }
+        const parsed = Number.parseFloat(stored);
+        return Number.isNaN(parsed) ? null : clamp(parsed, 0, 100);
+      } catch (err) {
+        return null;
+      }
     }
 
     function startProgress(card, durationMs) {
@@ -891,6 +1536,7 @@
         }
       });
       refreshNowPlayingStatus();
+      renderQueue();
     }
 
     function setActiveCard(key, totalDuration) {
@@ -898,12 +1544,14 @@
       const card = document.querySelector(`.key-card[data-key="${key}"]`);
       if (card) {
         currentCard = card;
+        currentDurationEstimate = typeof totalDuration === 'number' ? totalDuration : 0;
         card.dataset.active = 'true';
         delete card.dataset.queued;
         if (typeof totalDuration === 'number' && totalDuration > 0) {
           startProgress(card, totalDuration);
         }
         refreshNowPlayingStatus();
+        renderQueue();
       }
     }
 
@@ -913,6 +1561,7 @@
         previous.dataset.active = 'false';
         clearProgress(previous);
         currentCard = null;
+        currentDurationEstimate = 0;
         updateQueueIndicators();
       }
     }
@@ -1057,6 +1706,7 @@
       if (!melodies[key]) {
         return;
       }
+      showMelodyToast(key);
       playbackQueue.push(key);
       updateQueueIndicators();
       if (!isProcessingQueue) {
@@ -1090,6 +1740,7 @@
       });
       activeNodes = [];
       unsetActiveCard();
+      hideMelodyToast(true);
     }
 
     document.addEventListener('keydown', (event) => {
@@ -1103,11 +1754,52 @@
       }
     });
 
-    document.getElementById('stopButton').addEventListener('click', () => {
-      stopPlayback();
-    });
+    if (stopButton) {
+      stopButton.addEventListener('click', () => {
+        stopPlayback();
+      });
+    }
+
+    if (clearQueueButton) {
+      clearQueueButton.addEventListener('click', () => {
+        if (playbackQueue.length === 0) {
+          return;
+        }
+        playbackQueue.length = 0;
+        updateQueueIndicators();
+      });
+    }
 
     refreshNowPlayingStatus();
+    renderQueue();
+
+    const initialVolume = (() => {
+      const stored = readStoredVolume();
+      if (stored !== null) {
+        return stored;
+      }
+      if (volumeSlider && typeof volumeSlider.value === 'string') {
+        const parsed = Number.parseFloat(volumeSlider.value);
+        if (!Number.isNaN(parsed)) {
+          return clamp(parsed, 0, 100);
+        }
+      }
+      return 68;
+    })();
+
+    applyVolume(initialVolume);
+    if (volumeSlider) {
+      volumeSlider.value = String(initialVolume);
+      paintVolumeSlider(initialVolume);
+      volumeSlider.addEventListener('input', () => {
+        applyVolume(volumeSlider.value);
+      });
+      ['change', 'blur'].forEach((eventName) => {
+        volumeSlider.addEventListener(eventName, () => {
+          applyVolume(volumeSlider.value, { persist: true });
+        });
+      });
+    }
 
     setTimeout(() => {
       const cards = document.querySelectorAll('.key-card');
