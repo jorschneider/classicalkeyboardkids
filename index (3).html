@@ -106,9 +106,48 @@
     .keys-grid {
       position: relative;
       z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .keys-row-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .keys-row-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(29, 27, 47, 0.55);
+      padding-left: 0.35rem;
+    }
+
+    .keys-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(115px, 1fr);
       gap: 1rem;
+      padding-bottom: 0.4rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+    }
+
+    .keys-row::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .keys-row::-webkit-scrollbar-thumb {
+      background: rgba(106, 76, 147, 0.22);
+      border-radius: 999px;
+    }
+
+    .keys-row:focus-visible {
+      outline: 2px solid var(--accent-4);
+      outline-offset: 4px;
     }
 
     .key-card {
@@ -126,6 +165,7 @@
       border: 3px solid transparent;
       position: relative;
       --card-color: var(--accent-4);
+      scroll-snap-align: start;
     }
 
     .key-card span.letter {
@@ -223,6 +263,110 @@
       justify-content: center;
     }
 
+    .queue-panel {
+      margin-top: 2.5rem;
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 18px;
+      padding: 1.4rem 1.6rem;
+      box-shadow: 0 12px 28px rgba(30, 30, 60, 0.16);
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .queue-panel__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .queue-panel h2 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .queue-empty {
+      margin: 0;
+      font-size: 0.95rem;
+      color: rgba(29, 27, 47, 0.65);
+    }
+
+    .queue-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .queue-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 0.95rem;
+      color: rgba(29, 27, 47, 0.9);
+    }
+
+    .queue-item .queue-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(106, 76, 147, 0.14);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .queue-item .queue-meta {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(29, 27, 47, 0.6);
+    }
+
+    .queue-item.queue-item--more {
+      justify-content: flex-end;
+      font-style: italic;
+      color: rgba(29, 27, 47, 0.6);
+    }
+
+    .queue-item.is-playing .queue-pill {
+      background: rgba(25, 130, 196, 0.16);
+      color: var(--accent-4);
+    }
+
+    .queue-item.is-next .queue-pill {
+      background: rgba(255, 159, 28, 0.18);
+      color: var(--accent-1);
+    }
+
+    button.clear-queue {
+      background: transparent;
+      border: 2px solid rgba(106, 76, 147, 0.3);
+      color: var(--text);
+      font-weight: 600;
+      border-radius: 999px;
+      padding: 0.45rem 1.1rem;
+      cursor: pointer;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    button.clear-queue:hover:not(:disabled) {
+      border-color: rgba(106, 76, 147, 0.65);
+      transform: translateY(-2px);
+    }
+
+    button.clear-queue:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
     button.stop {
       background: var(--accent-4);
       color: #fff;
@@ -260,6 +404,14 @@
         padding: 2rem 1.4rem;
       }
 
+      .keys-grid {
+        gap: 1.1rem;
+      }
+
+      .keys-row {
+        grid-auto-columns: minmax(140px, 70%);
+      }
+
       .key-card {
         padding: 1.1rem 0.85rem 1.7rem;
       }
@@ -273,6 +425,16 @@
         width: 60px;
         height: 60px;
         font-size: 2.2rem;
+      }
+
+      .queue-panel {
+        padding: 1.1rem 1.2rem;
+      }
+
+      .queue-panel__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
       }
     }
   </style>
@@ -289,6 +451,15 @@
     </header>
 
     <section class="keys-grid" aria-label="Keyboard melody options"></section>
+
+    <aside class="queue-panel" aria-label="Playback queue" aria-live="polite">
+      <div class="queue-panel__header">
+        <h2>Playback queue</h2>
+        <button class="clear-queue" type="button" id="clearQueueButton" disabled>Clear queue</button>
+      </div>
+      <p class="queue-empty" id="queueEmptyMessage">No melodies queued yet—tap a card or press a key to line one up.</p>
+      <ol class="queue-list" role="list" aria-describedby="queueEmptyMessage"></ol>
+    </aside>
 
     <div class="controls">
       <button class="stop" type="button" id="stopButton">Stop the music</button>
@@ -702,13 +873,49 @@
     const keyMatcher = {};
     const keysGrid = document.querySelector('.keys-grid');
     const nowPlayingValue = document.querySelector('.now-playing .value');
+    const queueList = document.querySelector('.queue-list');
+    const queueEmptyMessage = document.getElementById('queueEmptyMessage');
+    const clearQueueButton = document.getElementById('clearQueueButton');
+
+    const KEY_ROW_LABELS = [
+      'Esc & numbers',
+      'Top letters',
+      'Home row',
+      'Bottom row',
+      'Space & modifiers',
+      'Navigation keys'
+    ];
+
+    const rowContainers = [];
+    if (keysGrid) {
+      KEY_ROWS.forEach((_, rowIndex) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'keys-row-wrapper';
+
+        const labelId = `keys-row-label-${rowIndex + 1}`;
+        const label = document.createElement('div');
+        label.className = 'keys-row-label';
+        label.id = labelId;
+        label.textContent = KEY_ROW_LABELS[rowIndex] || `Row ${rowIndex + 1}`;
+        wrapper.appendChild(label);
+
+        const rowElement = document.createElement('div');
+        rowElement.className = 'keys-row';
+        rowElement.setAttribute('role', 'group');
+        rowElement.setAttribute('aria-labelledby', labelId);
+        wrapper.appendChild(rowElement);
+
+        keysGrid.appendChild(wrapper);
+        rowContainers.push(rowElement);
+      });
+    }
 
     const keyEntries = [];
-    KEY_ROWS.forEach(row => {
-      row.forEach(key => {
+    KEY_ROWS.forEach((row, rowIndex) => {
+      row.forEach((key) => {
         const datasetKey = datasetKeyFor(key);
         const display = displayLabelFor(key);
-        keyEntries.push({ key, datasetKey, display });
+        keyEntries.push({ key, datasetKey, display, rowIndex });
       });
     });
 
@@ -741,7 +948,10 @@
       card.setAttribute('aria-label', `${entry.display} key plays ${pattern.title}`);
       card.setAttribute('role', 'button');
       card.setAttribute('tabindex', '0');
-      keysGrid.appendChild(card);
+      const host = rowContainers[entry.rowIndex] || keysGrid;
+      if (host) {
+        host.appendChild(card);
+      }
 
       const letterSpan = card.querySelector('.letter');
       if (entry.display.length > 2) {
@@ -802,6 +1012,71 @@
     let cancelCurrent = false;
     let activeNodes = [];
     let currentCard = null;
+
+    function syncQueueButtonState() {
+      if (!clearQueueButton) {
+        return;
+      }
+      clearQueueButton.disabled = playbackQueue.length === 0;
+    }
+
+    function renderQueue() {
+      if (!queueList) {
+        syncQueueButtonState();
+        return;
+      }
+
+      queueList.innerHTML = '';
+
+      const activeKey = currentCard && currentCard.dataset ? currentCard.dataset.key : null;
+      const activeMelody = activeKey ? melodies[activeKey] : null;
+
+      if (activeMelody) {
+        const item = document.createElement('li');
+        item.className = 'queue-item is-playing';
+        item.innerHTML = `
+          <span class="queue-pill">${activeMelody.title}</span>
+          <span class="queue-meta">Now playing</span>
+        `;
+        queueList.appendChild(item);
+      }
+
+      const previewCount = 6;
+      const upcoming = playbackQueue.slice(0, previewCount);
+      upcoming.forEach((key, index) => {
+        const melody = melodies[key];
+        if (!melody) {
+          return;
+        }
+        const item = document.createElement('li');
+        item.className = 'queue-item';
+        if (index === 0) {
+          item.classList.add('is-next');
+        }
+        const label = index === 0 ? 'Next up' : `In line #${index + 1}`;
+        item.innerHTML = `
+          <span class="queue-pill">${melody.title}</span>
+          <span class="queue-meta">${label}</span>
+        `;
+        queueList.appendChild(item);
+      });
+
+      if (playbackQueue.length > upcoming.length) {
+        const remaining = playbackQueue.length - upcoming.length;
+        const item = document.createElement('li');
+        item.className = 'queue-item queue-item--more';
+        item.innerHTML = `<span class="queue-meta">+ ${remaining} more queued</span>`;
+        queueList.appendChild(item);
+      }
+
+      const hasEntries = queueList.children.length > 0;
+      if (queueEmptyMessage) {
+        queueEmptyMessage.hidden = hasEntries;
+      }
+      queueList.hidden = !hasEntries;
+
+      syncQueueButtonState();
+    }
 
     function totalDurationForMelody(melody) {
       if (!melody || !Array.isArray(melody.notes)) {
@@ -891,6 +1166,7 @@
         }
       });
       refreshNowPlayingStatus();
+      renderQueue();
     }
 
     function setActiveCard(key, totalDuration) {
@@ -904,6 +1180,7 @@
           startProgress(card, totalDuration);
         }
         refreshNowPlayingStatus();
+        renderQueue();
       }
     }
 
@@ -1107,7 +1384,18 @@
       stopPlayback();
     });
 
+    if (clearQueueButton) {
+      clearQueueButton.addEventListener('click', () => {
+        if (playbackQueue.length === 0) {
+          return;
+        }
+        playbackQueue.length = 0;
+        updateQueueIndicators();
+      });
+    }
+
     refreshNowPlayingStatus();
+    renderQueue();
 
     setTimeout(() => {
       const cards = document.querySelectorAll('.key-card');
