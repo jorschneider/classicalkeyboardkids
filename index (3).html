@@ -16,6 +16,7 @@
       --accent-4: #1982c4;
       --accent-5: #6a4c93;
       --accent-6: #ffca3a;
+      --toast-accent: var(--accent-4);
     }
 
     * {
@@ -399,6 +400,72 @@
       z-index: 1;
     }
 
+    .melody-toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 5;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      max-width: min(320px, calc(100vw - 40px));
+    }
+
+    .melody-toast[data-visible="true"] {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .melody-toast__bubble {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 22px;
+      padding: 0.75rem 1.1rem;
+      box-shadow: 0 18px 40px rgba(30, 30, 60, 0.2);
+      border: 2px solid rgba(106, 76, 147, 0.25);
+      backdrop-filter: blur(8px);
+    }
+
+    .melody-toast__key {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 48px;
+      min-height: 48px;
+      padding: 0 0.75rem;
+      border-radius: 14px;
+      background: var(--toast-accent);
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    .melody-toast__text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .melody-toast__title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .melody-toast__composer {
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: rgba(29, 27, 47, 0.65);
+    }
+
     @media (max-width: 600px) {
       main {
         padding: 2rem 1.4rem;
@@ -436,6 +503,24 @@
         align-items: flex-start;
         gap: 0.75rem;
       }
+
+      .melody-toast {
+        left: 20px;
+        right: 20px;
+        bottom: 24px;
+        max-width: none;
+      }
+
+      .melody-toast__bubble {
+        justify-content: center;
+        text-align: center;
+      }
+
+      .melody-toast__key {
+        min-width: 44px;
+        min-height: 44px;
+        font-size: 1.2rem;
+      }
     }
   </style>
 </head>
@@ -449,6 +534,16 @@
         <span class="value">Press any key or tap a card to begin!</span>
       </div>
     </header>
+
+    <div class="melody-toast" role="status" aria-live="assertive" aria-atomic="true">
+      <div class="melody-toast__bubble">
+        <span class="melody-toast__key" aria-hidden="true"></span>
+        <div class="melody-toast__text">
+          <span class="melody-toast__title"></span>
+          <span class="melody-toast__composer"></span>
+        </div>
+      </div>
+    </div>
 
     <section class="keys-grid" aria-label="Keyboard melody options"></section>
 
@@ -876,6 +971,10 @@
     const queueList = document.querySelector('.queue-list');
     const queueEmptyMessage = document.getElementById('queueEmptyMessage');
     const clearQueueButton = document.getElementById('clearQueueButton');
+    const melodyToast = document.querySelector('.melody-toast');
+    const melodyToastKey = melodyToast ? melodyToast.querySelector('.melody-toast__key') : null;
+    const melodyToastTitle = melodyToast ? melodyToast.querySelector('.melody-toast__title') : null;
+    const melodyToastComposer = melodyToast ? melodyToast.querySelector('.melody-toast__composer') : null;
 
     const KEY_ROW_LABELS = [
       'Esc & numbers',
@@ -1012,6 +1111,67 @@
     let cancelCurrent = false;
     let activeNodes = [];
     let currentCard = null;
+    let toastHideTimeout = null;
+
+    function hideMelodyToast(clearTimer = false) {
+      if (!melodyToast) {
+        return;
+      }
+      if (clearTimer && toastHideTimeout) {
+        clearTimeout(toastHideTimeout);
+        toastHideTimeout = null;
+      }
+      delete melodyToast.dataset.visible;
+    }
+
+    function showMelodyToast(key) {
+      if (!melodyToast) {
+        return;
+      }
+      const melody = melodies[key];
+      if (!melody) {
+        return;
+      }
+      if (toastHideTimeout) {
+        clearTimeout(toastHideTimeout);
+        toastHideTimeout = null;
+      }
+
+      if (melodyToastKey) {
+        const label = melody.keyLabel || key;
+        const normalized = label.length === 1 ? label.toUpperCase() : label;
+        const trimmed = normalized.length > 10 ? `${normalized.slice(0, 9)}…` : normalized;
+        melodyToastKey.textContent = trimmed;
+      }
+
+      if (melodyToastTitle) {
+        melodyToastTitle.textContent = melody.title || '';
+      }
+
+      if (melodyToastComposer) {
+        if (melody.composer) {
+          melodyToastComposer.textContent = `by ${melody.composer}`;
+          melodyToastComposer.style.display = '';
+        } else {
+          melodyToastComposer.textContent = '';
+          melodyToastComposer.style.display = 'none';
+        }
+      }
+
+      const card = document.querySelector(`.key-card[data-key="${key}"]`);
+      if (card && card.dataset && card.dataset.color) {
+        const accent = card.dataset.color;
+        melodyToast.style.setProperty('--toast-accent', accent);
+      } else {
+        melodyToast.style.setProperty('--toast-accent', 'var(--accent-4)');
+      }
+
+      melodyToast.dataset.visible = 'true';
+      toastHideTimeout = setTimeout(() => {
+        toastHideTimeout = null;
+        hideMelodyToast();
+      }, 2600);
+    }
 
     function syncQueueButtonState() {
       if (!clearQueueButton) {
@@ -1334,6 +1494,7 @@
       if (!melodies[key]) {
         return;
       }
+      showMelodyToast(key);
       playbackQueue.push(key);
       updateQueueIndicators();
       if (!isProcessingQueue) {
@@ -1367,6 +1528,7 @@
       });
       activeNodes = [];
       unsetActiveCard();
+      hideMelodyToast(true);
     }
 
     document.addEventListener('keydown', (event) => {
